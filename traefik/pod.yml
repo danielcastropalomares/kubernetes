@@ -7,12 +7,25 @@ metadata:
     run: nginx
   name: nginx
 spec:
+  volumes:
+  - name: workdir
+    emptyDir: {}        
   containers:
   - image: nginx
     name: nginx
     ports:
     - containerPort: 80
+    volumeMounts:
+    - name: workdir
+      mountPath: /usr/share/nginx/html      
     resources: {}
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.28
+    command: ['sh', '-c', "mkdir /work-dir/bar && echo 'hello to bar website' > /work-dir/bar/index.html"]    
+    volumeMounts:
+    - name: workdir
+      mountPath: "/work-dir"    
   dnsPolicy: ClusterFirst
   restartPolicy: Always
 status: {}
